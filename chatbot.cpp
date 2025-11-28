@@ -1,103 +1,88 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
-using namespace std;
+Below is the simplest possible Python chatbot using the Google Gemini API key (Gemini 1.5 Flash / Pro).
+This is a single file, works in terminal, no web framework needed.
 
-struct Rule
-{
-    vector<string> conditions;
-    string conclusion;
-};
 
-string toLower(string s)
-{
-    transform(s.begin(), s.end(), s.begin(), ::tolower);
-    return s;
-}
+---
 
-bool allTrue(vector<string> cond, map<string, bool> &facts)
-{
-    for (auto &c : cond)
-        if (!facts[c])
-            return false;
-    return true;
-}
+✅ Install Google Gemini Library
 
-string forwardChain(vector<Rule> &rules, map<string, bool> &facts)
-{
-    bool newFactAdded;
-    string lastConclusion = "";
+pip install google-generativeai python-dotenv
 
-    do
-    {
-        newFactAdded = false;
-        for (auto &rule : rules)
-        {
-            if (allTrue(rule.conditions, facts) && !facts[rule.conclusion])
-            {
-                facts[rule.conclusion] = true;
-                lastConclusion = rule.conclusion;
-                newFactAdded = true;
-            }
-        }
-    } while (newFactAdded);
 
-    return lastConclusion;
-}
+---
 
-int main()
-{
-    cout << "=========================================\n";
-    cout << "🤖  AI-Powered Health Chatbot\n";
-    cout << "=========================================\n";
-    cout << "This bot can help identify possible health advice.\n";
-    cout << "Type symptoms like: fever, cough, tired, sore throat.\n";
-    cout << "Type 'bye' to exit.\n\n";
+✅ Create .env File
 
-    vector<Rule> rules = {
-        {{"fever", "cough"}, "flu"},
-        {{"tired", "fever"}, "infection"},
-        {{"sore throat", "cough"}, "cold"},
-        {{"flu"}, "rest"},
-        {{"infection"}, "doctor"},
-        {{"cold"}, "hydration"}};
+GEMINI_API_KEY=your_api_key_here
 
-    map<string, bool> facts;
 
-    while (true)
-    {
-        cout << "\nYou: ";
-        string input;
-        getline(cin, input);
-        input = toLower(input);
+---
 
-        if (input == "bye" || input == "exit")
-        {
-            cout << "Chatbot: Take care! Stay healthy 😊\n";
-            break;
-        }
+✅ Simple Python Chatbot Using Gemini
 
-        facts[input] = true;
+Save this as gemini_chatbot.py
 
-        string result = forwardChain(rules, facts);
+import google.generativeai as genai
+from dotenv import load_dotenv
+import os
 
-        if (result == "flu")
-            cout << "Chatbot: It seems like you might have flu. Take some rest and stay hydrated.\n";
-        else if (result == "infection")
-            cout << "Chatbot: You might have an infection. It's better to consult a doctor.\n";
-        else if (result == "cold")
-            cout << "Chatbot: Sounds like a common cold. Drink warm fluids and rest.\n";
-        else if (result == "doctor")
-            cout << "Chatbot: I recommend you to visit a doctor soon.\n";
-        else if (result == "rest")
-            cout << "Chatbot: You should take adequate rest.\n";
-        else if (result == "hydration")
-            cout << "Chatbot: Keep yourself hydrated. It helps in faster recovery.\n";
-        else
-            cout << "Chatbot: Okay, noted your symptom. Please tell me more.\n";
-    }
+# Load API key
+load_dotenv()
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-    return 0;
-}
+# Choose model
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+print("Gemini Chatbot (type 'exit' to stop)")
+
+chat_session = model.start_chat(history=[])
+
+while True:
+    user_message = input("You: ")
+
+    if user_message.lower() == "exit":
+        print("Chatbot: Goodbye!")
+        break
+
+    response = chat_session.send_message(user_message)
+    print("Chatbot:", response.text)
+
+
+---
+
+🚀 How It Works
+
+Uses the Gemini 1.5 Flash model (fast + cheap).
+
+Maintains a chat conversation using start_chat().
+
+You type → Gemini replies.
+
+Works for real-world scenarios like:
+
+Customer support
+
+FAQ bot
+
+College admission help bot
+
+Health & fitness assistant
+
+Product recommendation bot
+
+
+
+
+---
+
+❓ Want Next?
+
+I can also give you:
+
+✅ GUI version (Tkinter)
+✅ Web chatbot (Flask / FastAPI)
+✅ WhatsApp bot version
+✅ Telegram bot version
+✅ E-commerce customer support bot example
+
+Just tell me!
